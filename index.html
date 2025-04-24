@@ -1,0 +1,976 @@
+﻿<!DOCTYPE html>
+<html lang="da" translate="no" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="google" content="notranslate">
+    <title>FP9 FOLKESKOLENS PRØVER</title>
+    <link rel="stylesheet" href="css/style.css?k=1" type="text/css" />
+    <link rel="stylesheet" href="css/tools.css" type="text/css" />
+    <script src="js/jquery.js"></script>
+    <script src="js/jquery-ui.js"></script>
+    <script src="js/uvm-top-logos.js?k=1"></script>
+    <script src="js/uvm_html5_opgave_samlet.js"></script>
+    <script src="js/jquery.mousewheel.js"></script>
+    <script type="text/javascript" src="js/flowtype.js"></script>
+    <script type="text/javascript" src="js/video-player-subtitles.js"></script>
+    <script type="text/javascript" src="js/browser-detect.js"></script>
+    <script type="text/javascript" src="js/video-player-samlet.js"></script>
+    <script type="text/javascript" src="js/audio-player.js"></script>
+    <script src="js/imageSlider.js"></script>
+    <script type="text/javascript" src="js/jquery.tooltip.js"></script>
+    <script type="text/javascript" src="js/builder.js?k=1"></script>
+    <script type="text/javascript" src="js/builder-validate.js?k=1"></script>
+    <script type="text/javascript" src="js/builder_timekeeper.js?k=1"></script>
+    <link rel="stylesheet" href="css/builder.css?k=1" type="text/css" />
+    <link rel="stylesheet" media="print" href="css/print.css?k=1">
+    <script type="text/javascript" src="test/mathquill.js"></script>
+    <link rel="stylesheet" href="test/mathquill.css" type="text/css" />
+    <script type="text/javascript" src="js/crypto/aes.js"></script>
+    <script type="text/javascript" src="js/ckeditor_classic/build/ckeditor.js"></script>
+    <style>
+        .blue-infobox {
+            max-width: 220px;
+            background: #D0DEEC;
+            border: solid 1px;
+            padding: 10px;
+            margin-right: 50px;
+        }
+
+        ul.table-list * {
+            box-sizing: border-box;
+        }
+
+        ul.table-list li {
+            display: flex;
+            flex-wrap: wrap;
+            border: solid 1px black;
+            flex-direction: row;
+            border-bottom: 0;
+        }
+
+        ul.table-list li div:first-child {
+            background: #D2DEED;
+            padding: 10px;
+            width: 20%;
+            border-right: solid 1px black;
+        }
+
+        ul.table-list li div:last-child {
+            width: 74%;
+            padding: 10px;
+        }
+
+        ul.table-list li:last-child {
+            border-bottom: solid 1px;
+        }
+
+        ul.table-list {
+            padding: 0;
+        }
+
+        .table {
+            border-spacing: 0;
+            border-collapse: collapse;
+        }
+
+        .table td,
+        .table th {
+            border: 1px solid #232323;
+            padding: 3px;
+        }
+
+        div#menu span:last-of-type {
+            position: relative;
+            bottom: 0;
+            border: none !important;
+            margin: 100px 0 0 !important;
+        }
+    </style>
+    <script>
+        var typeWeight = {
+            "Dansk": 1,
+            "Engelsk": 2,
+            "Matematik": 3,
+            "Fysik/Kemi": 4,
+            "Ekstra": 5
+        };
+        function LoadFullPage(pageId, returnId) {
+            UVM.view.funcLoadContent(pageId, 1);
+            $(".wrapper").css("width", "100%");
+            $("#menuWrapper").css("display", "none");
+            $(".top").css("display", "none");
+            $('.PAGE').css("display", "none");
+            $('#fake-bottom-menu').css("display", "block");
+            $('#fake-bottom-menu a').data("returnId", returnId);
+            $('.PAGE[data-id="' + pageId + '"]').css({
+                "width": "100%",
+                "display": "block",
+                "padding": "0"
+            });
+        }
+        $(function () {
+            $('#fake-bottom-menu a').on("click", function () {
+                var returnId = $(this).data("returnId");
+                $(".wrapper").css("width", "");
+                $("#menuWrapper").css("display", "");
+                $(".top").css("display", "");
+                $('.PAGE').css("display", "none");
+                $('#fake-bottom-menu').css("display", "none");
+                $(window).trigger("resize");
+                UVM.view.funcLoadContent(returnId, 0);
+            });
+
+            $(document).on("click", '#29', function (e) {
+                e.preventDefault();
+                Builder.CallSave();
+                window.print();
+            });
+
+            function RunBuilder() {
+                if (typeof Builder === "undefined") {
+                    setTimeout(function () {
+                        RunBuilder();
+                    }, 10);
+                    return;
+                }
+                Builder.Init(function () {
+                    BuilderTimeKeeper.Init();
+                });
+            }
+            function CheckBrowser() {
+                if (typeof browserData === "undefined") {
+                    setTimeout(function () {
+                        CheckBrowser();
+                    }, 10);
+                    return;
+                }
+                // if (browserData.browser != "chrome") {
+                //     $("body").html("");
+                //     let div = $('<div></div>').attr("style", 'width: 800px;' +
+                //         'margin: 100px auto;' +
+                //         'background-color: #FFFFFF;' +
+                //         'border-radius: 8px;' +
+                //         'padding: 10px 20px;' +
+                //         'font-size:18px;' +
+                //         'text-align:center;').appendTo($("body"));
+                //     let span = $('<p></p>').html('For at løse denne opgave skal du bruge chrome som din browser.<br />Du kan hente chrome <a href="https://www.google.com/chrome/" target="_blank">her</a>.').appendTo(div);
+                // }
+            }
+            RunBuilder();
+            CheckBrowser();
+        });
+
+
+
+        function UndefinedToZero(value) {
+            if (typeof value === "undefined") {
+                return 0;
+            }
+            return value;
+        }
+
+        function _Time(frames, seconds, minutes, hours) {
+            frames = UndefinedToZero(frames) / 24;
+            seconds = UndefinedToZero(seconds);
+            minutes = UndefinedToZero(minutes) * 60;
+            hours = UndefinedToZero(hours) * 3600;
+            return hours + minutes + seconds + frames;
+        }
+
+        function TTime(value) {
+            if (typeof value === "undefined") {
+                value = "00:00:00:00";
+            }
+            var split = value.split(":");
+            var frames = (split[3] * 1) / 24;
+            var seconds = split[2] * 1;
+            var minutes = (split[1] * 1) * 60;
+            var hours = (split[0] * 1) * 3600;
+            var output = hours + minutes + seconds + frames;
+            return output;
+        }
+
+        function T(start, end, text, direction) {
+            if (typeof direction === "undefined") {
+                direction = "ltr";
+            }
+            return {
+                start: start,
+                end: end,
+                text: text,
+                direction: direction
+            }
+        }
+
+    </script>
+
+</head>
+
+<body data-taskid="" data-fag="fs" style="visibility:hidden">
+    <div class="wrapper">
+
+        <!--End Top-->
+        <div class="main">
+            <div id="menuWrapper">
+                <div class="sub-title">
+                </div>
+                <div id="menu">
+                </div>
+
+                <!-- END MENU -->
+                <div id="taskNumber"></div>
+            </div>
+
+            <div id="content">
+                <div class="top">
+                    <div id="uvmLogo"><img src="images/uvm_logo_stuk.png" alt="" /></div>
+                </div>
+
+                <!--Forside-->
+                <div class="PAGE" data-id="1" data-parentid="0" data-layout="0" data-menutekst="Forside">
+                    <div style="height:95px;">&nbsp;</div>
+                    <div>
+                        <div class="titleColor">
+                            <p>Matematik</p>
+                        </div>
+                        <br>
+                        <div class="content-text">
+                            <div class="headline">
+                                <div id="ordning">
+                                    Prøven med hjælpemidler
+                                </div>
+                                <div id="delprove">
+                                    Opgavehæfte
+                                </div>
+                                <div id="timeofexam">
+                                    Prøven varer 3 timer (180 minutter)<br>
+                                </div>
+                                <div id="dateofexam">
+                                    Mandag den 6. maj 2024<br>
+                                    Kl. 10.00-13.00
+                                </div>
+                            </div>
+                            <div id="bodytext">
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <br /><br /><br /><br />
+
+                </div>
+
+                <!--Mellemrum-->
+                <div class="PAGE" data-id="2" data-parentid="0" data-layout="0" data-menutekst=""></div>
+
+
+                <!--Vejledning-->
+                <div class="PAGE" data-id="3" data-parentid="0" data-layout="0" data-menutekst="Vejledning">
+                    Kære elev
+                    <br /><br />
+                    Prøven består af 7 opgaver. Du har 3 timer til at løse dem.<br /><br />
+                    Ved hver opgave står der, hvor mange point den højst kan give. Prøven kan i alt højst give 65 point.
+                    Du bestemmer selv, hvilken rækkefølge du laver opgaverne i, og hvor lang tid du vil bruge på hver af
+                    dem.<br /><br />
+                    Det er vigtigt, at du begrunder dine svar i <i>alle</i> opgaver.<br /><br />
+                    Det betyder, at du i hver opgave skal vise eller forklare, hvordan du er nået frem til dit svar. Du
+                    kan fx begrunde dit svar med tekst, beregninger og/eller tegninger.<br /><br />
+                    En del af de point, du kan få i hver opgave, kommer fra dine begrundelser. I de fleste opgaver kan
+                    du ikke få det højeste antal point, hvis du ikke begrunder dit svar, selv om dine resultater er
+                    rigtige.
+                    <br /><br />
+                    I nogle af opgaverne skal du beregne et antal eller en størrelse. I andre
+                    opgaver skal du vise, hvordan du finder frem til et bestemt resultat eller
+                    afgøre, om en påstand er sand eller falsk.<br /><br />
+                    Der er også opgaver, hvor du skal løse et matematisk problem ved at
+                    undersøge. I disse opgaver forventer vi ikke, at du på forhånd kender en
+                    metode, du kan bruge til at løse problemet. Ordet ’undersøg’ signalerer, at du
+                    selv skal finde på en god måde at løse problemet på ved at bruge matematik,
+                    du kender.<br /><br />
+                    God arbejdslyst.<br /><br />
+                    Styrelsen for Undervisning og Kvalitet
+                    <br /><br /><br /><br />
+                </div>
+
+                <!--Mellemrum-->
+                <div class="PAGE" data-id="4" data-parentid="0" data-layout="0" data-menutekst=""></div>
+
+                <!--Opgave 1-->
+                <div class="PAGE" data-id="5" data-parentid="0" data-layout="0" data-menutekst="Opgave 1">
+                    <div class="box-group">
+                        <div class="group">
+                            <h1 class="box blue header-number border" style="margin-right:10px;">1</h1>
+                        </div>
+                        <div class="group fill">
+                            <span class="box fill blue border" style="padding:2px 6px;justify-content:space-between;">
+                                <h2 class="header-title">Leje af festlokale</h2>
+                                <span style="line-height: 28px;">Opgave 1 giver højst 11 point</span>
+                            </span>
+                        </div>
+                    </div>
+                    <br />
+
+                    <div style="position:relative">
+                        <table style="width:100%;">
+                            <tr>
+                                <td style="vertical-align: top;width:40px;"></td>
+                                <td style="vertical-align: text-top;">
+                                    <div style="display: flex;width: 100%;">
+                                        <div style="width: 50%;padding: 0 50px 0 0;">
+
+                                            9. klasserne på en skole vil leje et lokale, hvor de kan holde fest.
+                                            Det koster 175 kr. pr. time at leje lokalet.<br>
+                                            Rengøring efter festen koster 1500 kr.
+                                            <br><br>
+                                        </div>
+                                        <div style="width: 35%;position: absolute;right: 0;">
+                                            <img src="files/opg_1_festlokale.jpg" alt="" width="100%">
+                                            <span style="font-size: 80%;font-style: italic;padding: 0;margin: 0;">Foto:
+                                                Opgavekommissionen i matematik</span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="vertical-align: top; width: 42px;"><span class="box blue"><b>1.1</b></span>
+                                </td>
+                                <td colspan="2" style="
+">
+                                    <div style="padding-top:calc(0.1em + 2px);width: 50%;">
+                                        Hvor meget skal eleverne betale i alt for leje og rengøring, hvis de lejer
+                                        lokalet i 5 timer?
+                                        <br><br><br>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top; width: 42px;"><span class="box blue"><b>1.2</b></span>
+                                </td>
+                                <td colspan="2">
+                                    <div style="padding-top:calc(0.1em + 2px);">
+                                        <p style="margin: 0; width: 50%; padding: 0 50px 0 0;">Hvor mange timer kan
+                                            eleverne leje
+                                            lokalet, hvis de har 3600 kr. til både leje og rengøring? <br> <br><br> <br>
+                                        </p>
+                                        <p style="margin: 0;">
+                                            Der er 45 elever i de to 9. klasser. Der kan altså højst komme 45 personer
+                                            til
+                                            festen.</p>
+                                        <br>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top; width: 42px;"><span class="box blue"><b>1.3</b></span>
+                                </td>
+                                <td colspan="2">
+                                    <div style="padding-top:calc(0.1em + 2px);"> Hvad bliver prisen pr. person, hvis den
+                                        samlede pris for leje og rengøring bliver 3600 kr., og der kommer 45 personer
+                                        til festen?
+                                        <br><br><br>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top; width: 42px;"><span class="box blue"><b>1.4</b></span>
+                                </td>
+                                <td colspan="2">
+                                    <div style="padding-top:calc(0.1em + 2px);">
+                                        Skriv et udtryk, der viser prisen pr. person, hvis 9. klasserne lejer lokalet i
+                                        <i>t</i> timer, og der kommer <i>n</i> personer til festen.
+                                    </div>
+                                </td>
+                            </tr>
+
+                        </table>
+                    </div>
+                    <br /><br /><br /><br />
+                </div>
+
+                <!--Opgave 2-->
+                <div class="PAGE" data-id="6" data-parentid="0" data-layout="0" data-menutekst="Opgave 2"
+                    style="display: table-cell; width: 955px;">
+                    <div class="box-group">
+                        <div class="group">
+                            <h1 class="box blue header-number border" style="margin-right:10px;">2</h1>
+                        </div>
+                        <div class="group fill">
+                            <span class="box fill blue border" style="padding:2px 6px;justify-content:space-between;">
+                                <h2 class="header-title">Krus til sodavand</h2>
+                                <span style="line-height: 28px;">Opgave 2 giver højst 11 point</span>
+                            </span>
+                        </div>
+                    </div>
+                    <br>
+
+                    <div style="position:relative">
+                        <table style="width:100%;">
+                            <tbody>
+                                <tr>
+                                    <td style="vertical-align: top;width:40px;"></td>
+                                    <td style="vertical-align: text-top; padding-right:6%; padding-top: 0%;">
+
+                                        9. klasserne vil købe to forskellige størrelser krus, som de kan bruge til at
+                                        servere sodavand
+                                        i til deres fest. Eleverne kan fylde 0,3 L i det lille, blå krus og 0,5 L i det
+                                        store, røde krus.
+                                        <br /><br /><br />
+                                        <div style="display: flex; flex-direction: column; width: 85%;">
+                                            <img src="files/opg_2_sodavand.jpg"
+                                                alt="Lille krus: 0,3L — Stort Krus: 0,5L"
+                                                style="width: 100%; max-width: 500px; margin: auto;">
+                                            <span style="font-size: 80%; font-style: italic; text-align: end;">
+                                                Tegning: Hans Ole Herbst
+                                            </span>
+                                        </div>
+                                        <br> <br> <br>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="vertical-align: top; width: 42px;"><span
+                                            class="box blue"><b>2.1</b></span>
+                                    </td>
+                                    <td colspan="2">
+                                        <div style="padding-top:calc(0.1em + 2px);"> Hvor mange små krus kan eleverne
+                                            fylde, hvis de har 1,5 L sodavand?
+                                            <br><br><br>
+                                            Et stort krus har form som en cylinder med en diameter på 7,0 cm. Eleverne
+                                            kan fylde sodavand i kruset op til 13 centimeters højde.
+                                            <br><br>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="vertical-align: top; width: 42px;"><span
+                                            class="box blue"><b>2.2</b></span>
+                                    </td>
+                                    <td colspan="2">
+                                        <div style="padding-top:calc(0.1em + 2px);">
+                                            Du skal vise med beregning, at et stort krus kan rumme ca. 0,5 L.
+                                            <br><br><br>
+                                            9. klasserne beslutter, at et stort krus sodavand skal koste 15 kr.
+                                            <br><br>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="vertical-align: top; width: 42px;"><span
+                                            class="box blue"><b>2.3</b></span>
+                                    </td>
+                                    <td colspan="2">
+                                        <div style="padding-top:calc(0.1em + 2px);">
+                                            Hvor meget skal et lille krus sodavand koste, hvis literprisen skal være den
+                                            samme, uanset om man køber et lille eller et stort krus sodavand?
+                                            <br><br><br>
+                                            9. klasserne vil købe så mange krus, at de tilsammen kan rumme 130 L. Til en
+                                            klassefest sidste år blev der solgt flere store krus end små krus, så de vil
+                                            købe dobbelt så mange store krus som små krus.
+                                            <br><br>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="vertical-align: top; width: 42px;"><span
+                                            class="box blue"><b>2.4</b></span>
+                                    </td>
+                                    <td colspan="2">
+                                        <div style="padding-top:calc(0.1em + 2px);">
+                                            Undersøg, hvor mange krus af hver størrelse eleverne skal købe.
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <br><br><br><br>
+                </div>
+
+                <!--Opgave 3-->
+                <div class="PAGE" data-id="7" data-parentid="0" data-layout="0" data-menutekst="Opgave 3">
+                    <div class="box-group">
+                        <div class="group">
+                            <h1 class="box blue header-number border" style="margin-right:10px;">3</h1>
+                        </div>
+                        <div class="group fill">
+                            <span class="box fill blue border" style="padding:2px 6px;justify-content:space-between;">
+                                <h2 class="header-title">Mad til festen</h2>
+                                <span style="line-height: 28px;">Opgave 3 giver højst 6 point</span>
+                            </span>
+                        </div>
+                    </div>
+                    <br />
+                    <div style="position:relative">
+                        <table style="width:100%;">
+                            <tr>
+                                <td style="vertical-align: top;width:40px;"></td>
+                                <td style="vertical-align: text-top;">
+                                    <div style="display: flex;width: 100%;">
+                                        <div style="width: 50%;padding: 0 50px 0 0;">
+
+                                            9. klasserne vil købe mad til deres fest.<br>
+                                            De har fundet priser fra tre forskellige firmaer, der kan lave mad til
+                                            festen.
+                                            <br>
+                                        </div>
+                                        <div style="width: 50%;">
+                                            <img src="files/opg_3_mad.jpg" alt="" width="100%">
+                                            <span style="font-size: 80%;font-style: italic;padding: 0;margin: 0;">Foto:
+                                                Colourbox</span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top;width:40px;"></td>
+                                <td style="vertical-align: text-top;">
+                                    <div style="display: flex;width: 100%;">
+                                        <div style="width: 100%;padding: 0 50px 0 0;">
+                                            <ul class="table-list">
+                                                <li>
+                                                    <div>Firma A</div>
+                                                    <div>4400 kr. i alt for op til 45 personer.</div>
+                                                </li>
+                                                <li>
+                                                    <div>Firma B</div>
+                                                    <div>125 kr. pr. person.</div>
+                                                </li>
+                                                <li>
+                                                    <div>Firma C</div>
+                                                    <div>85 kr. pr. person og et engangsbeløb på 1200 kr.</div>
+                                                </li>
+                                            </ul>
+                                            <br>
+                                            9. klasserne regner med, at der kommer mellem 25 og 45 personer til festen.
+                                            <br><br>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top; width: 42px;"><span class="box blue"><b>3.1</b></span>
+                                </td>
+                                <td colspan="2">
+                                    <div style="padding-top:calc(0.1em + 2px);">
+                                        Hvor mange personer skal der komme til festen, for at det bliver billigst at
+                                        vælge
+                                        <br>
+                                        • firma A?
+                                        <br>
+                                        • firma B?
+                                        <br>
+                                        • firma C?
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        <br />
+                    </div>
+                    <br /><br /><br /><br />
+                </div>
+
+                <!--Opgave 4-->
+                <div class="PAGE" data-id="8" data-parentid="0" data-layout="0" data-menutekst="Opgave 4"
+                    style="display: table-cell; width: 955px;">
+                    <div class="box-group">
+                        <div class="group">
+                            <h1 class="box blue header-number border" style="margin-right:10px;">4</h1>
+                        </div>
+                        <div class="group fill">
+                            <span class="box fill blue border" style="padding:2px 6px;justify-content:space-between;">
+                                <h2 class="header-title">Bordopstilling</h2>
+                                <span style="line-height: 28px;">Opgave 4 giver højst 8 point</span>
+                            </span>
+                        </div>
+                    </div>
+                    <br>
+
+                    <div style="position:relative">
+                        <table style="width:100%;">
+                            <tbody>
+                                <tr>
+                                    <td style="vertical-align: top;width:40px;"></td>
+                                    <td colspan="2" style="vertical-align: text-top; padding-right: 3%;">
+
+                                        I det festlokale, 9. klasserne vil leje, er der mange ens borde. Eleverne kan se
+                                        to tegninger af et af bordene på festlokalets hjemmeside.
+                                        <br><br>
+                                        <img src="files/opg_4_bord.jpg" alt="Tegning: Hans Ole Herbst"
+                                            style="width: 100%; margin-bottom: 1rem;">
+                                        <br>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="vertical-align: top;width:40px;"></td>
+                                    <td>
+                                        <div
+                                            style="display: flex;flex-direction: row;width: 100%; margin-bottom: 0; max-width: 835px;">
+                                            <div
+                                                style="display: flex;flex-direction: column; width: 50%; padding-top: 20px;">
+                                                Der kan sidde personer hele vejen rundt
+                                                om bordene. Hver person skal have
+                                                60 cm plads.
+                                                <div style="display: flex; margin: 20px 20px 10px -46px;">
+                                                    <div style="vertical-align: top; width: 42px;"><span
+                                                            class="box blue"><b>4.1</b></span></div>
+                                                    <div
+                                                        style="padding-right: 30px; padding-left: 13px; padding-top:calc(0.1em + 2px); padding-bottom: 2%;">
+                                                        Hvor mange personer kan der sidde ved
+                                                        tre borde, hvis bordene står, som skitse 1 viser?
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div style="display: flex;flex-direction: column;width: 55%;">
+                                                <img src="files/opg_4_skitse1.jpg" alt="Skitse 1">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="vertical-align: top;width:40px;"></td>
+                                    <td>
+                                        <div
+                                            style="display: flex;flex-direction: row;width: 100%; margin-bottom: 0; max-width: 835px;">
+                                            <div
+                                                style="display: flex; flex-direction: column; width: 50%; padding-top: 20px; padding-right: 3rem;">
+                                                9. klasserne vil købe duge til bordene, og
+                                                derfor skal de vide, hvor brede bordene er.
+                                                <div style="display: flex; margin: 20px 20px 10px -46px;">
+                                                    <div style="vertical-align: top; width: 42px;"><span
+                                                            class="box blue"><b>4.2</b></span></div>
+                                                    <div
+                                                        style="padding-right: 30px; padding-left: 13px; padding-top:calc(0.1em + 2px); padding-bottom: 2rem;">
+                                                        Hvor stor er bredden, <i>b</i>, der er vist med
+                                                        et rødt linjestykke på skitse 2?
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div style="display: flex; flex-direction: column;width: 50%;">
+                                                <img style="margin-top: -55px;" src="files/opg_4_skitse2.jpg"
+                                                    alt="Skitse 2">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="vertical-align: top;width:40px;"></td>
+                                    <td>
+                                        <div
+                                            style="display: flex;flex-direction: row;width: 100%; margin-bottom: 0; max-width: 835px;">
+                                            <div
+                                                style="display: flex;flex-direction: column; width: 50%; padding-top: 10px; padding-right: 3rem;">
+
+                                                Silje foreslår, at bordene skal stå 6 og 6, så
+                                                bordenes parallelle sider danner to regulære
+                                                sekskanter, når man ser dem fra oven.
+                                                Se skitse 3.
+                                                <div style="display: flex; margin: 20px 20px 10px -46px;">
+                                                    <div style="vertical-align: top; width: 42px;"><span
+                                                            class="box blue"><b>4.3</b></span></div>
+                                                    <div
+                                                        style="padding-right: 30px; padding-left: 13px; padding-top:calc(0.1em + 2px); padding-bottom: 3rem;">
+                                                        Undersøg, om denne bordopstilling er
+                                                        mulig med de vinkler og sidelængder, bordene har.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div style="display: flex;flex-direction: column;width: 50%;">
+                                                <img style="margin-top: 0px;" src="files/opg_4_skitse3.jpg"
+                                                    alt="Skitse 3">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!--Opgave 5-->
+                <div class="PAGE" data-id="9" data-parentid="0" data-layout="0" data-menutekst="Opgave 5"
+                    style="display: table-cell; width: 955px;">
+                    <div class="box-group">
+                        <div class="group">
+                            <h1 class="box blue header-number border" style="margin-right:10px;">5</h1>
+                        </div>
+                        <div class="group fill">
+                            <span class="box fill blue border" style="padding:2px 6px;justify-content:space-between;">
+                                <h2 class="header-title">Quiz</h2>
+                                <span style="line-height: 28px;">Opgave 5 giver højst 10 point</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <table style="width:100%;">
+                        <tbody>
+                            <tr>
+                                <td style="vertical-align: top;width:40px;"></td>
+                                <td>
+                                    Til festen stod Laura og Silje for en quiz, hvor hver elev kunne score fra 0 til 20
+                                    point. Tabellen og diagrammet viser, hvor mange point eleverne fra 9. A scorede i
+                                    quizzen. Tabellen og diagrammet er også i filen <a
+                                        href="files/QUIZ_MAJ_2024.xlsx">QUIZ_MAJ_2024</a>.
+                                    <br>
+                                    <div style="display: flex;flex-direction: column;align-items: center;">
+                                        <img src="files/opg_5_quiz.jpg" alt="
+                                        Antal point: 10, Antal Elever 0,
+                                        Antal point: 11, Antal Elever 2,
+                                        Antal point: 12, Antal Elever 0,
+                                        Antal point: 13, Antal Elever 2,
+                                        Antal point: 14, Antal Elever 5,
+                                        Antal point: 15, Antal Elever 4,
+                                        Antal point: 16, Antal Elever 4,
+                                        Antal point: 17, Antal Elever 3,
+                                        Antal point: 18, Antal Elever 1,
+                                        Antal point: 19, Antal Elever 1,
+                                        Antal point: 20, Antal Elever 0,
+                                        " style="margin-top:10px; width: 100%;">
+                                    </div>
+                                    <br><br>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top; width: 42px;"><span class="box blue"><b>5.1</b></span>
+                                </td>
+                                <td>
+                                    <div style="padding-top:calc(0.1em + 2px);">
+                                        Hvor mange elever fra 9. A scorede 17 eller flere point?
+                                        <br><br><br>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top; width: 42px;"><span class="box blue"><b>5.2</b></span>
+                                </td>
+                                <td>
+                                    <div style="padding-top:calc(0.1em + 2px);">
+                                        Du skal vise med beregning, at eleverne i 9. A i gennemsnit scorede 15 point.
+                                        <br><br><br>
+                                        Silje påstår, at tallet 15 altid vil være i et datasæt, der har gennemsnittet
+                                        15.
+                                        <br><br>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top; width: 42px;"><span class="box blue"><b>5.3</b></span>
+                                </td>
+                                <td>
+                                    <div style="padding-top:calc(0.1em + 2px);">
+                                        Har Silje ret?
+                                        <br><br><br>
+                                        I quizzen deltog også 18 elever fra 9. B, som i gennemsnit scorede 16 point. To
+                                        af eleverne scorede endda 20 point.
+                                        <br><br>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top; width: 42px;"><span class="box blue"><b>5.4</b></span>
+                                </td>
+                                <td>
+                                    <div style="padding-top:calc(0.1em + 2px);">
+                                        Tegn et søjlediagram, der viser, hvordan fordelingen af antal point i 9. B kan
+                                        se ud. Brug evt. filen <a href="files/QUIZ_MAJ_2024.xlsx">QUIZ_MAJ_2024</a>.
+                                        <br><br>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br><br><br><br>
+                </div>
+
+                <!--Opgave 6-->
+                <div class="PAGE" data-id="10" data-parentid="0" data-layout="0" data-menutekst="Opgave 6"
+                    style="display: table-cell; width: 955px;">
+                    <div class="box-group">
+                        <div class="group">
+                            <h1 class="box blue header-number border" style="margin-right:10px;">6</h1>
+                        </div>
+                        <div class="group fill">
+                            <span class="box fill blue border" style="padding:2px 6px;justify-content:space-between;">
+                                <h2 class="header-title">Rombers areal og omkreds</h2>
+                                <span style="line-height: 28px;">Opgave 6 giver højst 11 point</span>
+                            </span>
+                        </div>
+                    </div>
+                    <table style="width:100%;">
+                        <tbody>
+                            <tr>
+                                <td style="vertical-align: top;width:40px;"></td>
+                                <td colspan="2" style="vertical-align: text-top; padding-right: 3%;">
+                                    <div style="display: flex; justify-content: space-between;">
+
+                                        Skitsen herunder viser romben A og dens to diagonaler.<br>
+                                        Den ene diagonal har længden 10. Den anden har længden 24.
+                                        <div class="blue-infobox">En rombe er en firkant med fire lige lange sider.
+                                            Diagonalerne i en rombe skærer hinanden vinkelret på midten.</div>
+                                    </div>
+                                    <img src="files/opg_6_rombe.jpg" alt="Skitse"
+                                        style="width: 450px; margin-bottom: 1rem;">
+                                    <br><br>
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top; padding-top: 1%; width: 42px;"><span
+                                        class="box blue"><b>6.1</b></span>
+                                </td>
+                                <td style="vertical-align: text-top; padding-top:1%;">
+                                    <div style="padding-top:calc(0.1em + 2px);">
+                                        Hvor stort er arealet af romben A?
+                                        <br><br><br>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top; width: 42px;"><span class="box blue"><b>6.2</b></span>
+                                </td>
+                                <td colspan="2">
+                                    <div style="padding-top:calc(0.1em + 2px);">
+                                        Hvor stor er omkredsen af romben A?
+                                        <br><br><br>
+                                        Tegningen herunder viser en vilkårlig rombe og dens to diagonaler.
+                                        <br><br>
+                                        <img src="files/opg_6_rombe2.jpg" alt=""
+                                            style="width: 450px; margin-bottom: 1rem;">
+                                        <br><br>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top; width: 42px;"><span class="box blue"><b>6.3</b></span>
+                                </td>
+                                <td colspan="2">
+                                    <div style="padding-top:calc(0.1em + 2px);">
+                                        Skriv et udtryk, man kan bruge til at beregne arealet af en vilkårlig rombe, når
+                                        diagonalernes længder er 2<i>a</i> og 2<i>b</i>.
+                                        <br><br><br>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top;width:40px;"></td>
+                                <td>
+                                    <div
+                                        style="display: flex;flex-direction: row;width: 100%; margin-bottom: 0; max-width: 835px;">
+                                        <div
+                                            style="display: flex;flex-direction: column; width: 70%; padding-top: 20px;">
+                                            <div style="display: flex; margin: 20px 20px 10px -46px;">
+                                                <div style="vertical-align: top; width: 42px;"><span
+                                                        class="box blue"><b>6.4</b></span></div>
+                                                <div
+                                                    style="padding-right: 30px; padding-left: 13px; padding-top:calc(0.1em + 2px); padding-bottom: 3rem;">
+                                                    Forklar, hvilket eller hvilke af de fem udtryk i den blå ramme der
+                                                    beskriver en vilkårlig rombes omkreds, når diagonalernes <br>længder
+                                                    er
+                                                    2<i>a</i> og 2<i>b</i>.
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div style="display: flex;flex-direction: column;width: 30%;">
+                                            <img style="margin-top: 0px;" src="files/opg_6_rombe3.jpg" alt="">
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br><br><br><br>
+                </div>
+
+                <!--Opgave 7-->
+                <div class="PAGE" data-id="11" data-parentid="0" data-layout="0" data-menutekst="Opgave 7">
+                    <div class="box-group">
+                        <div class="group">
+                            <h1 class="box blue header-number border" style="margin-right:10px;">7</h1>
+                        </div>
+                        <div class="group fill">
+                            <span class="box fill blue border" style="padding:2px 6px;justify-content:space-between;">
+                                <h2 class="header-title">Sum på 100</h2>
+                                <span style="line-height: 28px;">Opgave 7 giver højst 8 point</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <table style="width:100%;">
+                        <tr>
+                            <td style="vertical-align: top;width:40px;"></td>
+                            <td>
+                                Silje, Malte, Esther og Frida har arbejdet med en opgave, hvor man skal indsætte hele
+                                tal større end 0 i den røde og den blå firkant, så summen bliver 100.
+                                <br /><br />
+                                <img src="files/opg_7_ligning1.jpg" alt="" style="width:50%; margin-left:20%;" />
+                                <br /><br /><br />
+                                De har sammen fundet løsningen herunder. Desuden påstår hver af de fire, at de har
+                                fundet ud af noget om opgaven.
+                                <br /><br />
+                                <img src="files/opg_7_ligning2.jpg" alt="" style="width:50%; margin-left:20%;" />
+                                <img src="files/opg_7_tegning.jpg" alt="
+                                Person 1: '28 er det største tal, der kan stå i en løsning.''
+                                Person 2: '4*15+3*10 er en af løsningerne.'
+                                Person 3: 'Der er netop 7 forskellige løsninger.'
+                                Person 4: 'Til hver løsning kan man tegne et punkt i et koordinatsystem, fx et punkt i (10,20). Alle disse punkter ligger på en ret linje.'
+                                " style="width:100%;" />
+                                <p style="font-size: 80%;
+                                font-style: italic;
+                                padding: 0;
+                                margin: 0;
+                                text-align: right;">Tegning: Hans Ole Herbst</p>
+                                <br><br>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="vertical-align: top; width: 42px;"><span class="box blue"><b>7.1</b></span></td>
+                            <td>
+                                <div style="padding-top:calc(0.1em + 2px);">
+                                    Undersøg hver af de fire elevers påstande. Du skal forklare, hvorfor hver påstand er
+                                    sand eller falsk.
+                                </div>
+                                <br /><br />
+                            </td>
+                        </tr>
+                    </table>
+
+                    <br /><br /><br /><br />
+                </div>
+
+                <!--Mellemrum-->
+                <div class="PAGE" data-id="12" data-parentid="0" data-layout="0" data-menutekst=""></div>
+                <!--Regneark til opgave 3-->
+                <div class="PAGE" data-id="13" data-parentid="0" data-layout="2" data-menutekst="Regneark til opgave 5">
+                    <a class="pdfLink" id="pdfLink13" href="files/QUIZ_MAJ_2024.xlsx" target="_blank"></a>
+                </div>
+                <div class="PAGE" data-id="9999" data-parentid="0" data-layout="0"
+                    data-menutekst="Prøvesættet er underlagt ophavsret. Læs mere her."
+                    style="display: table-cell; width: 955px;">
+                    <div class="ophavsret"
+                        style="border: solid black 1px; padding: 25px 25px 10px; font-style: italic; line-height: 1.4;"
+                        data-mce-style="border: solid black 1px; padding: 25px 25px 10px; font-style: italic; line-height: 1.4;">
+                        <h2><i>Det følgende er ikke en del af prøven:</i></h2>
+                        <p><i>Dette prøvesæt er omfattet af ophavsretten, jf. ophavsretslovens &sect; 1.<br><br>
+                                Prøvesættet må alene anvendes til den på prøvesættet anførte prøve.<br><br>
+                                Al anden anvendelse af prøvesættet, herunder visning eller deling f.eks. via
+                                internettet, sociale medier, portaler og bøger, udgør en krænkelse af Børne- og
+                                Undervisningsministeriets og evt. tredjemands ophavsret og er ikke tilladt.<br><br>
+                                Overtrædelse af ophavsretten kan være erstatningspådragende og/eller strafbart.<br><br>
+                                Prøvesættet kan dog, efter at prøven er afsluttet, anvendes til undervisningsbrug på
+                                uddannelser m.v. omfattet af den lovgivning, som Styrelsen for Undervisning og Kvalitet
+                                administrerer.</i></p>
+                    </div>
+                </div>
+
+            </div> <!-- END CONTENT -->
+        </div> <!-- END MAIN -->
+        <div id="bottomMenu"></div>
+    </div>
+</body>
+
+</html>
